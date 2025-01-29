@@ -1,0 +1,22 @@
+# Ignore Java and Maven-related files
+
+target/
+
+*.jar
+
+*.war
+
+*.ear
+
+.idea/
+
+*.iml
+
+mvnw
+
+mvnw.cmd
+
+logs/
+
+*.log
+
