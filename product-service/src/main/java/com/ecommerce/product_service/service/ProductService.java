@@ -1,10 +1,10 @@
 package com.ecommerce.product_service.service;
 
+import org.springframework.stereotype.Service;
 import com.ecommerce.product_service.model.Product;
 import com.ecommerce.product_service.repository.ProductRepository;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ProductService {
@@ -18,7 +18,15 @@ public class ProductService {
         return productRepository.findAll();
     }
 
-    public Product createProduct(Product product) {
+    public Product getProductById(UUID productId) {
+        return productRepository.findById(productId).orElse(null);
+    }
+
+    public Product saveProduct(Product product) {
         return productRepository.save(product);
+    }
+
+    public void deleteProduct(UUID productId) {
+        productRepository.deleteById(productId);
     }
 }
