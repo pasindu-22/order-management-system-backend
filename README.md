@@ -12,3 +12,8 @@ Each service has its own `pom.xml`. Navigate to the service and run:
 
 ```sh
 mvn spring-boot:run
+
+## How to run eureka server
+```sh
+http://localhost:8761/
+

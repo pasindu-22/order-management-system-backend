@@ -1,0 +1,17 @@
+server:
+  port: 8761  # Default Eureka Server Port
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    register-with-eureka: false  # Eureka server does not register itself
+    fetch-registry: false        # It does not fetch registry from itself
+  server:
+    enable-self-preservation: false
+
+spring:
+  security:
+    user:
+      name: admin
+      password: admin

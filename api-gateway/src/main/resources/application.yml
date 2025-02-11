@@ -1,0 +1,28 @@
+server:
+  port: 8080  # API Gateway runs on port 8080
+
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true  # Enables service discovery for API Gateway
+          lower-case-service-id: true  # Makes service IDs lowercase
+      routes:
+        - id: product-service
+          uri: lb://product-service
+          predicates:
+            - Path=/api/products/**
+
+        - id: order-service
+          uri: lb://order-service
+          predicates:
+            - Path=/api/orders/**
+
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/api/users/**
