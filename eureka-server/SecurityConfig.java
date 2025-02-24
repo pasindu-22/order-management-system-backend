@@ -10,10 +10,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
-            .authorizeRequests()
-            .antMatchers("/eureka/**").permitAll()
-            .anyRequest().authenticated()
-            .and()
-            .httpBasic();
+                .authorizeRequests()
+                .antMatchers("/eureka/**").permitAll()  // Allow access to Eureka endpoints
+                .anyRequest().authenticated()
+                .and()
+                .httpBasic();
     }
 }

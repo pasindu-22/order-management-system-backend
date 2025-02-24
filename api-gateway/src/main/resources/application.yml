@@ -5,6 +5,12 @@ spring:
   application:
     name: api-gateway
 
+  security:
+     user:
+       name: admin
+       password: admin
+
+
   cloud:
     gateway:
       discovery:
@@ -26,3 +32,14 @@ spring:
           uri: lb://user-service
           predicates:
             - Path=/api/users/**
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://admin:admin@localhost:8761/eureka/  # URL of Eureka Server
+
+logging:
+  level:
+    root: INFO
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.web: DEBUG
