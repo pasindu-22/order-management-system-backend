@@ -1,6 +1,8 @@
 package com.ecommerce.product_service.model;
 
 import jakarta.persistence.*;
+import lombok.Setter;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -9,6 +11,7 @@ import java.util.UUID;
 @Table(name = "products")  // Defines the table name
 public class Product {
 
+    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)  // Automatically generates a unique ID
     private UUID productId;
@@ -39,10 +42,6 @@ public class Product {
     // Getters and Setters
     public UUID getProductId() {
         return productId;
-    }
-
-    public void setProductId(UUID productId) {
-        this.productId = productId;
     }
 
     public String getName() {
