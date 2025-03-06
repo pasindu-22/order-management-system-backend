@@ -1,6 +1,7 @@
 package com.ecommerce.product_service.controller;
 
 import com.ecommerce.product_service.model.Product;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.ecommerce.product_service.model.Product;
 import com.ecommerce.product_service.service.ProductService;
@@ -9,9 +10,11 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/products")
+@CrossOrigin(origins = "http://localhost:3000") // Allow frontend
 public class ProductController {
     private final ProductService productService;
 
+    @Autowired
     public ProductController(ProductService productService) {
         this.productService = productService;
     }
