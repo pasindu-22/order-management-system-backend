@@ -56,4 +56,16 @@ public class Stock {
     public void setWarehouse(Warehouse warehouse) {
         this.warehouse = warehouse;
     }
+
+    public String getProductSku() {
+        return productSku;
+    }
+
+    public Warehouse getWarehouse() {
+        return warehouse;
+    }
+
+    public int getLowStockThreshold() {
+        return lowStockThreshold;
+    }
 }

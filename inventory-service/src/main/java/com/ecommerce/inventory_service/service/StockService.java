@@ -53,4 +53,8 @@ public class StockService {
         stock.setWarehouse(warehouse);
         return stockRepository.save(stock);
     }
+
+    public Stock getStockByProductSku(String productSku) {
+        return stockRepository.findByProductSku(productSku).orElse(null);
+    }
 }
