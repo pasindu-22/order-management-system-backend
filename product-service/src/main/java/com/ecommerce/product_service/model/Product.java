@@ -28,7 +28,10 @@ public class Product {
     @Column(nullable = false)
     private BigDecimal price;
 
-    private int stock;
+    @Column(nullable = false, unique = true)
+    private String sku;  // Stock Keeping Unit (unique identifier)
+
+//    private int stock;
 
     private String imageUrl;  // Store image URL (not actual image)
 
@@ -46,6 +49,14 @@ public class Product {
 
     public String getName() {
         return name;
+    }
+
+    public String getSku() {
+        return sku;
+    }
+
+    public void setSku(String sku) {
+        this.sku = sku;
     }
 
     public void setName(String name) {
@@ -74,14 +85,6 @@ public class Product {
 
     public void setPrice(BigDecimal price) {
         this.price = price;
-    }
-
-    public int getStock() {
-        return stock;
-    }
-
-    public void setStock(int stock) {
-        this.stock = stock;
     }
 
     public String getImageUrl() {

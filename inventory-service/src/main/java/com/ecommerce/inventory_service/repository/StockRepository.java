@@ -12,4 +12,7 @@ import java.util.UUID;
 public interface StockRepository extends JpaRepository<Stock, UUID> {
 
     Optional<Stock> findByProductSku(String productSku);
+
+    // Get all stocks
+
 }
