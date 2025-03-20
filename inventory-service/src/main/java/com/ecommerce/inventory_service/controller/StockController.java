@@ -24,11 +24,6 @@ public class StockController {
         this.stockService = stockService;
     }
 
-    @GetMapping
-    public String apiTest() {
-        return "API is working!";
-    }
-
     @PostMapping("/new")
     public Stock createStock(@RequestBody StockCreateDTO stockCreateDTO) {
         return stockService.createStock(stockCreateDTO);
