@@ -87,13 +87,30 @@ public class ReservationService {
         return true;
     }
 
+    @Transactional
+    public boolean completeReservation(String orderId) {
+        List<Reservation> reservations = reservationRepository.findByOrderId(orderId);
+        if (reservations.isEmpty()) {
+            return false;
+        }
+        for (Reservation reservation : reservations) {
+            reservation.setStatus(Reservation.ReservationStatus.COMPLETED);
+            reservationRepository.save(reservation);
+        }
+
+        kafkaProducerService.sendMessage("stock.confirmed",
+                "{ \"orderId\": \"" + orderId + "\", \"status\": \"confirmed\" }");
+
+        return true;
+    }
+
     @Scheduled(fixedRate = 60000) //Run every minute
     public void releaseExpiredReservations() {
         LocalDateTime now = LocalDateTime.now();
         List<Reservation> expiredReservations = reservationRepository.findByStatusAndReservationExpiryBefore(Reservation.ReservationStatus.PENDING,now);
         for (Reservation reservation : expiredReservations) {
             // Release the reserved stock
-            releaseReservedInventory(reservation.getOrderId(), reservation.getProductSku(), reservation.getReservedQuantity());
+            releaseReservedInventory(reservation.getOrderId());
             reservation.setStatus(Reservation.ReservationStatus.CANCELLED);
             reservationRepository.save(reservation);
         }

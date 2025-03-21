@@ -61,4 +61,16 @@ public class KafkaConsumerService {
             System.err.println("Error processing payment.failed event: " + e.getMessage());
         }
     }
+
+    @KafkaListener(topics = "order.paid", groupId = "inventory-group")
+    public void handleOrderPaid(String message) {
+        try {
+            JsonNode root = objectMapper.readTree(message);
+            String orderId = root.path("orderId").asText();
+
+            reservationService.completeReservation(orderId);
+        } catch (Exception e) {
+            System.out.println("Error processing order.paid event: " + e.getMessage());
+        }
+    }
 }
