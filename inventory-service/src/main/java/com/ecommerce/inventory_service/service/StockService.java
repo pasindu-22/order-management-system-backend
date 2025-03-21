@@ -57,4 +57,9 @@ public class StockService {
     public Stock getStockByProductSku(String productSku) {
         return stockRepository.findByProductSku(productSku).orElse(null);
     }
+
+    public boolean isStockAvailable(String productSku) {
+        Stock stock = stockRepository.findByProductSku(productSku).orElse(null);
+        return stock != null && stock.getQuantity() > 0;
+    }
 }

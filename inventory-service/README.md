@@ -1,4 +1,4 @@
-** Inventory Service by Pasindu**
+**## Inventory Service by Pasindu**
 
 * Track stock levels for each product
 * Update stock on purchase (reduce stock count)
