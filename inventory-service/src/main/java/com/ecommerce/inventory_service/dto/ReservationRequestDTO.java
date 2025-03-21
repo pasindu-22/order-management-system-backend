@@ -3,7 +3,6 @@ package com.ecommerce.inventory_service.dto;
 import java.time.LocalDateTime;
 
 public class ReservationRequestDTO {
-    private String reservationStatus;
     private String orderId;
     private String productSku;
     private int quantity;

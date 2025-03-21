@@ -58,11 +58,13 @@ public class ReservationService {
     }
 
     @Transactional
-    public boolean releaseReservedInventory(String orderId, String productSku, int quantity) {
-        System.out.println("Releasing reserved stock for Product: " + productSku + ", Quantity: " + quantity);
+    public boolean releaseReservedInventory(String orderId) {
+        System.out.println("Releasing reserved stock for Order ID: " + orderId);
 
+        // Find reservation for the order
+        Reservation reservation = reservationRepository.findByOrderId(orderId).get(0);
         // Find stock for the product
-        Stock stock = stockRepository.findByProductSku(productSku)
+        Stock stock = stockRepository.findByProductSku(reservation.getProductSku())
             .orElse(null);
 
         if (stock == null) {
@@ -70,16 +72,16 @@ public class ReservationService {
         }
 
         // Update stock in database - add the quantity back
-        stock.setQuantity(stock.getQuantity() + quantity);
+        stock.setQuantity(stock.getQuantity() + reservation.getReservedQuantity());
         stockRepository.save(stock);
 
         //update reservation status to cancelled
-        Reservation reservation = reservationRepository.findByOrderId(orderId).get(0);
         reservation.setStatus(Reservation.ReservationStatus.CANCELLED);
+        reservationRepository.save(reservation);
 
         // Publish stock updated event
         kafkaProducerService.sendMessage("stock.updated",
-            "{ \"productSku\": \"" + productSku + "\", \"quantity\": " + quantity +
+            "{ \"productSku\": \"" + reservation.getProductSku() + "\", \"quantity\": " + reservation.getReservedQuantity() +
             ", \"status\": \"released\", \"orderId\": \"" + orderId + "\" }");
 
         return true;

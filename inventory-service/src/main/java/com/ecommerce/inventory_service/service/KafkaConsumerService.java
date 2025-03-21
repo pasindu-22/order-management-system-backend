@@ -41,7 +41,7 @@ public class KafkaConsumerService {
             String productSku = root.path("productSku").asText();
             int quantity = root.path("quantity").asInt();
 
-            reservationService.releaseReservedInventory(orderId, productSku, quantity);
+            reservationService.releaseReservedInventory(orderId);
         } catch (Exception e) {
             System.err.println("Error processing order.canceled event: " + e.getMessage());
         }
@@ -56,7 +56,7 @@ public class KafkaConsumerService {
             String productSku = root.path("productSku").asText();
             int quantity = root.path("quantity").asInt();
 
-            reservationService.releaseReservedInventory(orderId, productSku, quantity);
+            reservationService.releaseReservedInventory(orderId);
         } catch (Exception e) {
             System.err.println("Error processing payment.failed event: " + e.getMessage());
         }
