@@ -41,7 +41,7 @@ public class KafkaConsumerService {
             String productSku = root.path("productSku").asText();
             int quantity = root.path("quantity").asInt();
 
-            reservationService.releaseReservedInventory(orderId, productSku, quantity);
+            reservationService.releaseReservedInventory(orderId);
         } catch (Exception e) {
             System.err.println("Error processing order.canceled event: " + e.getMessage());
         }
@@ -56,9 +56,21 @@ public class KafkaConsumerService {
             String productSku = root.path("productSku").asText();
             int quantity = root.path("quantity").asInt();
 
-            reservationService.releaseReservedInventory(orderId, productSku, quantity);
+            reservationService.releaseReservedInventory(orderId);
         } catch (Exception e) {
             System.err.println("Error processing payment.failed event: " + e.getMessage());
+        }
+    }
+
+    @KafkaListener(topics = "order.paid", groupId = "inventory-group")
+    public void handleOrderPaid(String message) {
+        try {
+            JsonNode root = objectMapper.readTree(message);
+            String orderId = root.path("orderId").asText();
+
+            reservationService.completeReservation(orderId);
+        } catch (Exception e) {
+            System.out.println("Error processing order.paid event: " + e.getMessage());
         }
     }
 }

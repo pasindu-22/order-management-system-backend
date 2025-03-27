@@ -55,4 +55,11 @@ public class StockController {
             .map(stock -> ResponseEntity.ok(stock.getQuantity()))
             .orElseGet(() -> ResponseEntity.notFound().build());
     }
+
+    @GetMapping("/available/{sku}")
+    public ResponseEntity<Boolean> isStockAvailable(@PathVariable String sku) {
+        Optional<Boolean> isAvailable = Optional.ofNullable(stockService.isStockAvailable(sku));
+        return isAvailable.map(available -> ResponseEntity.ok(available))
+            .orElseGet(() -> ResponseEntity.notFound().build());
+    }
 }

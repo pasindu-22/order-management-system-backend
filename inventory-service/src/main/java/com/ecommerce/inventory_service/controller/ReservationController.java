@@ -30,13 +30,9 @@ public class ReservationController {
         }
     }
 
-    @PostMapping("/release")
-    public ResponseEntity<String> releaseInventory(@RequestBody ReservationRequestDTO request) {
-        boolean success = reservationService.releaseReservedInventory(
-            request.getOrderId(),
-            request.getProductSku(),
-            request.getQuantity()
-        );
+    @PostMapping("/release/{orderId}")
+    public ResponseEntity<String> releaseInventory(@PathVariable String orderId) {
+        boolean success = reservationService.releaseReservedInventory(orderId);
 
         if (success) {
             return ResponseEntity.ok("Reserved inventory released successfully");
