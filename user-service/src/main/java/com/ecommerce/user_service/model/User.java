@@ -14,6 +14,6 @@ public class User {
     private String name;
     private String email;
     private String password;
-    private String role; // "ADMIN" or "CUSTOMER"
+    private String role;
     private List<String> addresses;
 }
