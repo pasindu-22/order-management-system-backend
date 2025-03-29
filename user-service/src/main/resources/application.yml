@@ -2,3 +2,11 @@ spring:
   data:
     mongodb:
       uri: mongodb+srv://devuser:Pasindu119@userservice.4jjnyoe.mongodb.net/userdb?retryWrites=true&w=majority
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 540001645968-9o4fq87kgh1dpchqoo823aqa7h4rl8vm.apps.googleusercontent.com
+            client-secret: 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
+            scope: profile, email
