@@ -1,6 +1,7 @@
 package com.ecommerce.user_service.controller;
 
 
+import com.ecommerce.user_service.dto.PasswordChangeDTO;
 import com.ecommerce.user_service.model.Employee;
 import com.ecommerce.user_service.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,5 +49,17 @@ public class EmployeeController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @PutMapping("/update/password/{id}")
+    public ResponseEntity<?> updateEmployeePassword(@PathVariable String id, @RequestBody PasswordChangeDTO passwordChangeRequest) {
+        Optional<Employee> existingEmployee = employeeService.getEmployeeById(id);
+        if (existingEmployee.isPresent()) {
+            Employee  updatedEmployee= employeeService.updateEmployeePassword(id, passwordChangeRequest);
+            return ResponseEntity.ok("Password updated successfully");
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+
     }
 }
