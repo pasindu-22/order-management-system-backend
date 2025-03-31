@@ -32,4 +32,20 @@ public class EmployeeService {
     public void deleteEmployee(String id) {
         employeeRepository.deleteById(id);
     }
+
+    public Employee updateEmployee(String id, Employee employee) {
+        Optional<Employee> existingEmployee = employeeRepository.findById(id);
+        if (existingEmployee.isPresent()) {
+            Employee updatedEmployee = existingEmployee.get();
+            updatedEmployee.setFirstName(employee.getFirstName());
+            updatedEmployee.setLastName(employee.getLastName());
+            updatedEmployee.setEmail(employee.getEmail());
+            updatedEmployee.setPhoneNumber(employee.getPhoneNumber());
+            updatedEmployee.setAbout(employee.getAbout());
+            updatedEmployee.setAddress(employee.getAddress());
+            return employeeRepository.save(updatedEmployee);
+        } else {
+            return null; // or throw an exception
+        }
+    }
 }

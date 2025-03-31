@@ -38,4 +38,15 @@ public class EmployeeController {
         employeeService.deleteEmployee(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> updateEmployee(@PathVariable String id, @RequestBody Employee employee) {
+        Optional<Employee> existingEmployee = employeeService.getEmployeeById(id);
+        if (existingEmployee.isPresent()) {
+            Employee updatedEmployee = employeeService.updateEmployee(id, employee);
+            return ResponseEntity.ok(updatedEmployee);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
