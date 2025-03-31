@@ -9,11 +9,15 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Employee {
     @Id
     private String id;
-    private String name;
+    private String firstName;
+    private String lastName;
+    private String phoneNumber;
     private String email;
     private String password;
     private String role; // "ADMIN" or other roles
     private String department;
     private String position;
-    // Add other employee-specific fields
+    private String address;
+    private String dateOfJoining;
+    private String about;
 }
