@@ -10,24 +10,24 @@ import org.springframework.stereotype.Service;
 @Service
 @Primary
 public class CombinedUserDetailsService implements UserDetailsService {
-    private final CustomUserDetailsService customerService;
-    private final EmployeeUserDetailsService employeeService;
+    private final CustomUserDetailsService customerUserDetailsService;
+    private final EmployeeUserDetailsService employeeUserDetailsService;
 
     @Autowired
     public CombinedUserDetailsService(
-            CustomUserDetailsService customerService,
-            EmployeeUserDetailsService employeeService) {
-        this.customerService = customerService;
-        this.employeeService = employeeService;
+            CustomUserDetailsService customerUserDetailsService,
+            EmployeeUserDetailsService employeeUserDetailsService) {
+        this.customerUserDetailsService = customerUserDetailsService;
+        this.employeeUserDetailsService = employeeUserDetailsService;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         try {
-            return customerService.loadUserByUsername(username);
+            return customerUserDetailsService.loadUserByUsername(username);
         } catch (UsernameNotFoundException e) {
             try {
-                return employeeService.loadUserByUsername(username);
+                return employeeUserDetailsService.loadUserByUsername(username);
             } catch (UsernameNotFoundException ex) {
                 throw new UsernameNotFoundException("User not found in either repository: " + username);
             }

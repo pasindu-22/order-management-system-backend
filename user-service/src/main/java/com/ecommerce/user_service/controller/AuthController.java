@@ -51,7 +51,7 @@ public class AuthController {
 
     @PostMapping("/employee/login")
     public ResponseEntity<?> employeeLogin(@RequestBody Map<String, String> request) {
-        String email = request.get("email");
+        String email = request.get("username");
         String password = request.get("password");
 
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
