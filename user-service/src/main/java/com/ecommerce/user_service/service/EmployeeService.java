@@ -1,5 +1,6 @@
 package com.ecommerce.user_service.service;
 
+import com.ecommerce.user_service.dto.PasswordChangeDTO;
 import com.ecommerce.user_service.model.Employee;
 import com.ecommerce.user_service.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,21 @@ public class EmployeeService {
             updatedEmployee.setAbout(employee.getAbout());
             updatedEmployee.setAddress(employee.getAddress());
             return employeeRepository.save(updatedEmployee);
+        } else {
+            return null; // or throw an exception
+        }
+    }
+
+    public Employee updateEmployeePassword(String id, PasswordChangeDTO passwordChangeRequest) {
+        Optional<Employee> existingEmployee = employeeRepository.findById(id);
+        if (existingEmployee.isPresent()) {
+            Employee updatedEmployee = existingEmployee.get();
+            if (passwordEncoder.matches(passwordChangeRequest.getCurrentPassword(), updatedEmployee.getPassword())) {
+                updatedEmployee.setPassword(passwordEncoder.encode(passwordChangeRequest.getNewPassword())); // Hash new password
+                return employeeRepository.save(updatedEmployee);
+            } else {
+                return null; // or throw an exception
+            }
         } else {
             return null; // or throw an exception
         }
