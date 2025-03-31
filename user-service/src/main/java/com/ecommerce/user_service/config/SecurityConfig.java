@@ -49,7 +49,9 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/api/employees/**").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/employees/**").hasRole("ADMIN")
+                        .requestMatchers("api/customers/**").hasAnyRole("ADMIN", "CUSTOMER")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
@@ -61,6 +63,7 @@ public class SecurityConfig {
         return http.build();
     }
 
+    // This bean is used to configure the authentication provider
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
@@ -68,8 +71,6 @@ public class SecurityConfig {
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }
-
-    // Keep your existing corsConfigurationSource and passwordEncoder methods
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
