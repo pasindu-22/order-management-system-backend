@@ -4,6 +4,7 @@ package com.ecommerce.user_service.controller;
 import com.ecommerce.user_service.dto.PasswordChangeDTO;
 import com.ecommerce.user_service.model.Employee;
 import com.ecommerce.user_service.service.EmployeeService;
+import com.ecommerce.user_service.service.WarehouseVerificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,8 @@ import java.util.Optional;
 public class EmployeeController {
     @Autowired
     private EmployeeService employeeService;
+    @Autowired
+    private WarehouseVerificationService warehouseVerificationService;
 
     @GetMapping
     public List<Employee> getAllEmployees() {
@@ -60,6 +63,11 @@ public class EmployeeController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
 
+    @GetMapping("/verify/{id}")
+    public ResponseEntity<?> verifyWarehouse(@PathVariable Long id) {
+        boolean exists = warehouseVerificationService.verifyWarehouseExists(id);
+        return ResponseEntity.ok(exists);
     }
 }

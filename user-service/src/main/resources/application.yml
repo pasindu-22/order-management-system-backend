@@ -1,3 +1,5 @@
+server:
+  port: 8080
 spring:
   data:
     mongodb:
@@ -10,3 +12,6 @@ spring:
             client-id: 540001645968-9o4fq87kgh1dpchqoo823aqa7h4rl8vm.apps.googleusercontent.com
             client-secret: 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
             scope: profile, email
+services:
+  inventory:
+    url: http://localhost:8081
