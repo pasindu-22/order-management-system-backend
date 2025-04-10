@@ -4,6 +4,7 @@ import com.ecommerce.inventory_service.dto.WarehouseCreateDTO;
 import com.ecommerce.inventory_service.model.Warehouse;
 import com.ecommerce.inventory_service.service.WarehouseService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -40,4 +41,11 @@ public class WarehouseController {
     public void deleteWarehouse(@PathVariable Long id) {
         warehouseService.deleteWarehouse(id);
     }
+
+    @GetMapping("/verify/{id}")
+    public ResponseEntity<Boolean> verifyWarehouseExists(@PathVariable Long id) {
+        boolean exists = warehouseService.warehouseExists(id);
+        return ResponseEntity.ok(exists);
+    }
+
 }

@@ -28,6 +28,10 @@ public class WarehouseService {
         });
     }
 
+    public boolean warehouseExists(Long id) {
+        return warehouseRepository.existsById(id);
+    }
+
     public void deleteWarehouse(Long id) {
         warehouseRepository.deleteById(id);
     }
