@@ -1,54 +1,60 @@
 package com.ecommerce.product_service.model;
 
+import com.ecommerce.product_service.model.Discount;
 import jakarta.persistence.*;
-import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
-@Entity  // Marks this class as a JPA entity (table)
-@Table(name = "products")  // Defines the table name
+@Entity
+@Table(name = "products")
 public class Product {
-
-    @Setter
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)  // Automatically generates a unique ID
-    private UUID productId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Column(nullable = false)
     private String name;
+    private String sku;
+    private String description;
+    private double price;
 
-    @Column(length = 500)
-    private String shortDescription;
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
 
-    @Column(columnDefinition = "TEXT")  // Store large HTML content
-    private String fullDescription;
-
-    @Column(nullable = false)
-    private BigDecimal price;
-
-    @Column(nullable = false, unique = true)
-    private String sku;  // Stock Keeping Unit (unique identifier)
-
-//    private int stock;
-
-    private String imageUrl;  // Store image URL (not actual image)
+    @ManyToOne
+    @JoinColumn(name = "discount_id")
+    private Discount discount;
 
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
-    @PrePersist  // Automatically sets createdAt before saving
+    @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
+        updatedAt = createdAt;
     }
 
-    // Getters and Setters
-    public UUID getProductId() {
-        return productId;
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
+
+    // Constructors, Getters, Setters
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getSku() {
@@ -59,44 +65,51 @@ public class Product {
         this.sku = sku;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String getDescription() {
+        return description;
     }
 
-    public String getShortDescription() {
-        return shortDescription;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public void setShortDescription(String shortDescription) {
-        this.shortDescription = shortDescription;
-    }
-
-    public String getFullDescription() {
-        return fullDescription;
-    }
-
-    public void setFullDescription(String fullDescriptions) {
-        this.fullDescription = fullDescription;
-    }
-
-    public BigDecimal getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(BigDecimal price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public Category getCategory() {
+        return category;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public Discount getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(Discount discount) {
+        this.discount = discount;
     }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 }

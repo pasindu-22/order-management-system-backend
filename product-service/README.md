@@ -1,22 +1,50 @@
-Product Service:
-✅ Purpose of the service:-
-    * Product catalog management (CRUD operations on products).
-    ✅ Stock management (keeping track of inventory).
-    ✅ Price management (setting, updating, and retrieving prices).
-    ✅ Category management (grouping products into categories).
-    ✅ Search and filtering (helping customers find products easily).
+# Product Service
 
-✅Public API Endpoints
-    HTTP Method	Endpoint	Description
-    GET	/products/{id}	Get product details by ID
-    GET	/products?category={id}	Get products by category
-    POST	/products	Create a new product
-    PUT	/products/{id}	Update product details
-    DELETE	/products/{id}	Remove a product
-    PATCH	/products/{id}/stock	Update stock after an order
-
-** Handle Performance and Scalability
-* Use caching (Redis) for frequently accessed products.
-* Optimize queries to prevent slow responses.
-* Implement pagination for large product lists.
-* Load balancing if handling high traffic
+## Purpose of the Service
+- Product catalog management (CRUD operations on products)
+- Integration with Inventory Service for stock information
+- Price management (setting, updating, and retrieving prices)
+- Search and filtering capabilities for product discovery
+    
+## Architecture
+- Spring Boot REST API (port 8083)
+- MySQL database for product persistence
+- Integration with Inventory Service via RestTemplate
+    
+## Public API Endpoints
+| HTTP Method | Endpoint | Description |
+|-------------|----------|-------------|
+| GET | /api/products | Get all products |
+| GET | /api/products/{id} | Get product details by ID |
+| POST | /api/products | Create a new product |
+| DELETE | /api/products/{id} | Remove a product |
+    
+## Data Model
+The Product entity contains:
+- productId: Unique identifier (auto-generated)
+- name: Product name
+- sku: Stock Keeping Unit (unique identifier for inventory)
+- shortDescription: Brief product description
+- fullDescription: Detailed HTML product description
+- price: Product pricing information
+- imageUrl: Link to product image
+- createdAt: Timestamp of product creation
+    
+## Service Integration
+- Connects to Inventory Service to retrieve current stock levels
+- Uses ProductStockDTO to combine product and inventory data
+    
+## Future Enhancements
+- Category management
+- Search and filtering optimization
+- Caching with Redis for frequently accessed products
+- Pagination for large product lists
+- Load balancing for high traffic scenarios
+- Migration to WebClient for reactive inventory service communication
+    
+## How to Run
+- Navigate to the product-service directory
+- Run the following command:
+```bash
+mvn spring-boot:run
+```

@@ -1,128 +1,147 @@
-**## Inventory Service by Pasindu**
+# Inventory Service
 
-* Track stock levels for each product
-* Update stock on purchase (reduce stock count)
-* Restock management (increase stock count)
-* Support for multiple warehouses (if applicable)
-* Handle inventory reservations for pending orders
-* Check stock availability before order confirmation
-* Stock alerts (low-stock notifications to admins)
-* Batch stock updates (e.g., bulk import from suppliers)
-* Integration with order service for real-time stock updates
-* Event-based stock updates (e.g., Kafka/RabbitMQ for consistency across services)
+## Overview
+A microservice for inventory management developed by Pasindu.
 
-APIs :-
-* getStockByProductSku [Synchronous API] :- Product service needs real-time stock info.
+## Features
+- Track stock levels for each product
+- Update stock on purchase (reduce stock count)
+- Restock management (increase stock count)
+- Support for multiple warehouses
+- Handle inventory reservations for pending orders
+- Check stock availability before order confirmation
+- Stock alerts (low-stock notifications to admins)
+- Batch stock updates (e.g., bulk import from suppliers)
+- Integration with order service for real-time stock updates
+- Event-based stock updates (e.g., Kafka for consistency across services)
 
-* updateStockOnPurchase [Event - Driven] :- Prevents order service from waiting. Stock updates can be eventual consistency.
+## API Endpoints
 
-* reserveInventory(orderId) [Event-Driven] :- Ensures inventory is reserved asynchronously without blocking the order process.
+### Synchronous APIs
+- `getStockByProductSku` - Product service needs real-time stock info
+- `checkStockAvailability()` - Used for quick lookups, needs instant response
+- `adjustStock(productSku, quantity, reason)` - Admins may need to manually adjust stock due to discrepancies
+- Various warehouse management APIs
 
-* checkStockAvailability() [ Synchronous API] :- Used for quick lookups, needs instant response.
+### Event-Driven APIs
+- `updateStockOnPurchase` - Prevents order service from waiting. Stock updates can be eventual consistency
+- `reserveInventory(orderId)` - Ensures inventory is reserved asynchronously without blocking the order process
+- `restock()` - Suppliers may send stock asynchronously; batch processing works better
+- `newStock()` - Allows bulk stock additions without blocking admin operations
+- `lowStockAlerts()` - Send event when stock is below threshold (notify admins, trigger restock)
+- `batchStockUpdates()` - High-volume updates should be processed asynchronously
+- `releaseReservedInventory()` - If an order is canceled, event-driven rollback ensures stock is not lost
 
-* restock() [Event-Driven] :- Suppliers may send stock asynchronously; batch processing works better.
+## Kafka Integration
 
-* newStock() [Event-Driven] :- Allows bulk stock additions without blocking admin operations.
+### Event Topics
+- `order.placed` → Trigger reserveInventory event
+- `order.canceled` → Trigger releaseReservedInventory event
+- `stock.low` → Trigger lowStockAlerts for admin notifications
+- `stock.updated` → Trigger real-time stock updates in Product Service
 
-* lowStockAlerts() [Event-Driven] :- Send event when stock is below threshold (notify admins, trigger restock).
+### Example Event Flow
+**Order Flow (Asynchronous)**
+1. Order Service → Publishes order.placed event
+2. Inventory Service → Listens for order.placed, reserves inventory asynchronously
 
-* batchStockUpdates() [Event-Driven] :- High-volume updates should be processed asynchronously.
+## Setup Instructions
 
-* releaseReservedInventory() [Event-Driven] :- If an order is canceled, event-driven rollback ensures stock is not lost.
+### Local Kafka Setup
+1. **Install Kafka locally** (Version 3.6 recommended)
+2. **Add configuration**
+  - Add kafka starter to dependency list
+  - Configure kafka in application.yml
+  - Define Kafka topics for inventory service
+  - Implement Kafka Producer in Inventory Service
+  - Implement Kafka Consumer in Inventory Service
+  - Implement using of Kafka consumer/producer services (reserveInventory & releaseReservedInventory in reservationService class in Service package)
 
-* adjustStock(productSku, quantity, reason) [ Synchronous API] :- Admins may need to manually adjust stock due to discrepancies.
+3. **Start Kafka & Zookeeper**
+   ```
+   cd C:\kafka
+   bin\windows\zookeeper-server-start.bat config\zookeeper.properties
+   
+   cd C:\kafka
+   bin\windows\kafka-server-start.bat config\server.properties
+   ```
 
-* Warehouse management APIs
+4. **Create required topics**
+   ```
+   bin\windows\kafka-topics.bat --create --bootstrap-server localhost:9092 --topic order.placed --partitions 1 --replication-factor 1
+   bin\windows\kafka-topics.bat --create --bootstrap-server localhost:9092 --topic stock.updated --partitions 1 --replication-factor 1
+   bin\windows\kafka-topics.bat --create --bootstrap-server localhost:9092 --topic order.canceled --partitions 1 --replication-factor 1
+   bin\windows\kafka-topics.bat --create --bootstrap-server localhost:9092 --topic payment.failed --partitions 1 --replication-factor 1
+   ```
 
+### Docker Setup
+1. **First time start**:
+   ```
+   docker run -d --name=kafka -p 9092:9092 apache/kafka
+   ```
 
-Kafka Event Topics for Inventory Service
-* order.placed → Trigger reserveInventory event
-* order.canceled → Trigger releaseReservedInventory event
-* payment.failed → Trigger releaseReservedInventory event
-* stock.low → Trigger lowStockAlerts for admin notifications
-* stock.updated → Trigger real-time stock updates in Product Service
+2. **Subsequent starts**:
+   ```
+   docker start kafka
+   ```
 
-Example Event Flow Using Kafka
-* Order Flow (Asynchronous)
-1. Order Service → Publishes order.placed event.
-2. Inventory Service → Listens for order.placed, reserves inventory asynchronously. 
-3. Payment Service → Processes payment, publishes payment.success or payment.failed.
-   * If payment.success, Inventory updates stock. 
-   * If payment.failed, Inventory releases reserved stock.
+3. **Verify cluster**:
+   ```
+   docker exec -ti kafka /opt/kafka/bin/kafka-cluster.sh cluster-id --bootstrap-server :9092
+   ```
 
-Kafka Setting up process :-
-* Add kafka starter to dependency list.
-* Configure kafka in application.yml
-* Define Kafka topics for inventory service
-* Implement Kafka Producer in I.S.
-* Implement Kafka Consumer in I.S.
-* Implement using of Kafka consumer/producer services. (reserveInventory & releaseReservedInventory in reservationService class in Service package).
-* Run and Test Kafka & Inventory Service. (First install Kafka locally[Ver 3.6]).
-* Start Kafka & Zookeeper
-  cd C:\kafka
-  bin\windows\zookeeper-server-start.bat config\zookeeper.properties
-  cd C:\kafka
-  bin\windows\kafka-server-start.bat config\server.properties
+## Testing Kafka Integration
 
-* Run Inventory Service
-* Send Kafka Events (Navigate to C:\kafka first)
-Run this command to start a producer that sends messages to the order.placed topic:-
->>
-kafka-console-producer.sh --broker-list localhost:9092 --topic order.placed
->>
-** Then Interactive mode :-
->{"orderId":"12345","productSku":"P001","quantity":2}
-Run this command to view messages just sent above
->>
-bin\windows\kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic order.placed --from-beginning
->>
+### Sending Test Messages
 
-Run the command to view order message :-
->>
-bin\windows\kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic stock.updated --from-beginning
->>
+1. **Start a producer for order.placed topic**:
+  - Local installation:
+    ```
+    kafka-console-producer.sh --broker-list localhost:9092 --topic order.placed
+    ```
+  - With Docker:
+    ```
+    docker exec -ti kafka /opt/kafka/bin/kafka-console-producer.sh --bootstrap-server :9092 --topic order.placed
+    ```
 
-* In our application stock reservation/release can be done via kafka and REST APIs.
+2. **Send a sample message in interactive mode**:
+   ```
+   {"orderId":"12345","productSku":"SKU12345","quantity":2}
+   ```
 
-* For local development:
-Start Kafka locally before running your Spring Boot application:
+3. **View sent messages**:
+  - Local installation:
+    ```
+    bin\windows\kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic order.placed --from-beginning
+    ```
+  - With Docker:
+    ```
+    docker exec -ti kafka /opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server :9092 --topic order.placed --from-beginning
+    ```
 
-Start ZooKeeper first
->>
-cd C:\kafka
-bin\windows\zookeeper-server-start.bat config\zookeeper.properties
-Then start Kafka in a separate terminal
->>
-cd C:\kafka
-bin\windows\kafka-server-start.bat config\server.properties
-Create required topics (if they don't exist):
+4. **View stock update messages**:
+  - Local installation:
+    ```
+    bin\windows\kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic stock.updated --from-beginning
+    ```
+  - With Docker:
+    ```
+    docker exec -ti kafka /opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server :9092 --topic stock.updated --from-beginning
+    ```
 
->>
-bin\windows\kafka-topics.bat --create --bootstrap-server localhost:9092 --topic order.placed --partitions 1 --replication-factor 1
-bin\windows\kafka-topics.bat --create --bootstrap-server localhost:9092 --topic stock.updated --partitions 1 --replication-factor 1
-bin\windows\kafka-topics.bat --create --bootstrap-server localhost:9092 --topic order.canceled --partitions 1 --replication-factor 1
-bin\windows\kafka-topics.bat --create --bootstrap-server localhost:9092 --topic payment.failed --partitions 1 --replication-factor 1
+## Cloud Deployment
 
+When deploying to the cloud, use a managed Kafka service like:
+- AWS MSK (Managed Streaming for Kafka)
+- Azure Event Hubs for Kafka
 
-Cloud Deployment :-
-* When deploying to the cloud:
-* Managed Kafka Service: Use a managed Kafka service like:
-* AWS MSK (Managed Streaming for Kafka)
-* Azure Event Hubs for Kafka
+## Architecture Notes
+- Uses SKU as the common identifier between services
+- Keeps stock management in the inventory service
+- Allows the product service to fetch stock information when needed
+- Implements KafkaListener services that listen to various kafka topics and perform operations accordingly
+- Both Kafka and REST APIs can be used for stock reservation/release operations
 
-Development Notes :-
-* Uses SKU as the common identifier between services
-* Keeps stock management in the inventory service
-* Allows the product service to fetch stock information when needed
-* There are KafkaListener services in our application that listens to various kafka topics and does the job accordingly.
-
-
-
-
-To Do :-
-
-1. [ ] Pending - Update the stock reservation logic to create records in the reservation table and implement release logic.
-2. [ ] Update reservationRequestDTO to include other details about reservations and necessary event for expiry and so on.
-
-	             
-
+## To Do
+1. [ ] Pending - Update the stock reservation logic to create records in the reservation table and implement release logic
+2. [ ] Update reservationRequestDTO to include other details about reservations and necessary event for expiry and so on
