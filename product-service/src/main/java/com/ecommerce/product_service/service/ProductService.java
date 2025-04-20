@@ -1,32 +1,44 @@
 package com.ecommerce.product_service.service;
 
-import org.springframework.stereotype.Service;
 import com.ecommerce.product_service.model.Product;
 import com.ecommerce.product_service.repository.ProductRepository;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class ProductService {
-    private final ProductRepository productRepository;
+    private final ProductRepository productRepo;
 
-    public ProductService(ProductRepository productRepository) {
-        this.productRepository = productRepository;
+    public ProductService(ProductRepository productRepo) {
+        this.productRepo = productRepo;
     }
 
     public List<Product> getAllProducts() {
-        return productRepository.findAll();
+        return productRepo.findAll();
     }
 
-    public Product getProductById(UUID productId) {
-        return productRepository.findById(productId).orElse(null);
+    public Product getProductById(Long id) {
+        return productRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
     }
 
-    public Product saveProduct(Product product) {
-        return productRepository.save(product);
+    public Product createProduct(Product product) {
+        return productRepo.save(product);
     }
 
-    public void deleteProduct(UUID productId) {
-        productRepository.deleteById(productId);
+    public Product updateProduct(Long id, Product productDetails) {
+        Product product = getProductById(id);
+        product.setName(productDetails.getName());
+        product.setSku(productDetails.getSku());
+        product.setDescription(productDetails.getDescription());
+        product.setPrice(productDetails.getPrice());
+        product.setCategory(productDetails.getCategory());
+        product.setDiscount(productDetails.getDiscount());
+        return productRepo.save(product);
+    }
+
+    public void deleteProduct(Long id) {
+        productRepo.deleteById(id);
     }
 }
