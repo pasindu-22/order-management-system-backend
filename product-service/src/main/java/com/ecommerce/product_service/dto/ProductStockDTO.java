@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 public class ProductStockDTO {
-    private UUID productId;
+    private long productId;
     private String name;
     private String sku;
     private String shortDescription;

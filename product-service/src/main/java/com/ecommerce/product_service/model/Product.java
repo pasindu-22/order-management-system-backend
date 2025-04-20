@@ -11,10 +11,9 @@ import java.util.UUID;
 @Table(name = "products")  // Defines the table name
 public class Product {
 
-    @Setter
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)  // Automatically generates a unique ID
-    private UUID productId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long productId;
 
     @Column(nullable = false)
     private String name;
@@ -43,7 +42,7 @@ public class Product {
     }
 
     // Getters and Setters
-    public UUID getProductId() {
+    public long getProductId() {
         return productId;
     }
 
