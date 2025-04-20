@@ -22,7 +22,7 @@ spring:
 
   spring:
     kafka:
-      bootstrap-servers: localhost:9092
+      bootstrap-servers: localhost:9092   // https://docs.docker.com/guides/kafka/  Used to run Kafka in Docker
       consumer:
         group-id: inventory-group
         auto-offset-reset: earliest

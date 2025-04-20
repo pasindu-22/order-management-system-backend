@@ -3,13 +3,13 @@
 * Track stock levels for each product
 * Update stock on purchase (reduce stock count)
 * Restock management (increase stock count)
-* Support for multiple warehouses (if applicable)
+* Support for multiple warehouses
 * Handle inventory reservations for pending orders
 * Check stock availability before order confirmation
 * Stock alerts (low-stock notifications to admins)
 * Batch stock updates (e.g., bulk import from suppliers)
 * Integration with order service for real-time stock updates
-* Event-based stock updates (e.g., Kafka/RabbitMQ for consistency across services)
+* Event-based stock updates (e.g., Kafka for consistency across services)
 
 APIs :-
 * getStockByProductSku [Synchronous API] :- Product service needs real-time stock info.
@@ -51,6 +51,7 @@ Example Event Flow Using Kafka
    * If payment.failed, Inventory releases reserved stock.
 
 Kafka Setting up process :-
+** Local installation of Kafka
 * Add kafka starter to dependency list.
 * Configure kafka in application.yml
 * Define Kafka topics for inventory service
@@ -63,23 +64,29 @@ Kafka Setting up process :-
   bin\windows\zookeeper-server-start.bat config\zookeeper.properties
   cd C:\kafka
   bin\windows\kafka-server-start.bat config\server.properties
+** Use with docker
+* start container:- docker run -d --name=kafka -p 9092:9092 apache/kafka
+* verify cluster :- docker exec -ti kafka /opt/kafka/bin/kafka-cluster.sh cluster-id --bootstrap-server :9092
 
 * Run Inventory Service
 * Send Kafka Events (Navigate to C:\kafka first)
 Run this command to start a producer that sends messages to the order.placed topic:-
 >>
-kafka-console-producer.sh --broker-list localhost:9092 --topic order.placed
+In local installation >> kafka-console-producer.sh --broker-list localhost:9092 --topic order.placed
+With docker >> docker exec -ti kafka /opt/kafka/bin/kafka-console-producer.sh --bootstrap-server :9092 --topic order.placed
 >>
 ** Then Interactive mode :-
->{"orderId":"12345","productSku":"P001","quantity":2}
+>>{"orderId":"12345","productSku":"SKU12345","quantity":2}
 Run this command to view messages just sent above
 >>
-bin\windows\kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic order.placed --from-beginning
+In local installation >> bin\windows\kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic order.placed --from-beginning
+With docker >> docker exec -ti kafka /opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server :9092 --topic order.placed --from-beginning
 >>
 
 Run the command to view order message :-
 >>
-bin\windows\kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic stock.updated --from-beginning
+In local installation >> bin\windows\kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic stock.updated --from-beginning
+With docker >> docker exec -ti kafka /opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server :9092 --topic stock.updated --from-beginning
 >>
 
 * In our application stock reservation/release can be done via kafka and REST APIs.
