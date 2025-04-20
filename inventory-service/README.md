@@ -38,17 +38,13 @@ APIs :-
 Kafka Event Topics for Inventory Service
 * order.placed → Trigger reserveInventory event
 * order.canceled → Trigger releaseReservedInventory event
-* payment.failed → Trigger releaseReservedInventory event
 * stock.low → Trigger lowStockAlerts for admin notifications
 * stock.updated → Trigger real-time stock updates in Product Service
 
 Example Event Flow Using Kafka
 * Order Flow (Asynchronous)
 1. Order Service → Publishes order.placed event.
-2. Inventory Service → Listens for order.placed, reserves inventory asynchronously. 
-3. Payment Service → Processes payment, publishes payment.success or payment.failed.
-   * If payment.success, Inventory updates stock. 
-   * If payment.failed, Inventory releases reserved stock.
+2. Inventory Service → Listens for order.placed, reserves inventory asynchronously.
 
 Kafka Setting up process :-
 ** Local installation of Kafka
@@ -65,7 +61,8 @@ Kafka Setting up process :-
   cd C:\kafka
   bin\windows\kafka-server-start.bat config\server.properties
 ** Use with docker
-* start container:- docker run -d --name=kafka -p 9092:9092 apache/kafka
+* start container first time:- docker run -d --name=kafka -p 9092:9092 apache/kafka
+* start container next time:- docker start kafka
 * verify cluster :- docker exec -ti kafka /opt/kafka/bin/kafka-cluster.sh cluster-id --bootstrap-server :9092
 
 * Run Inventory Service
