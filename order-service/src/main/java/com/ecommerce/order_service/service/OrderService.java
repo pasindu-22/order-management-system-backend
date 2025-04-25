@@ -1,14 +1,20 @@
 package com.ecommerce.order_service.service;
 
+import com.ecommerce.order_service.dto.OrderCreateRequest;
+import com.ecommerce.order_service.dto.OrderItemRequest;
+import com.ecommerce.order_service.dto.ProductDto;
 import com.ecommerce.order_service.model.Order;
 import com.ecommerce.order_service.model.OrderItem;
 import com.ecommerce.order_service.model.OrderStatus;
 import com.ecommerce.order_service.repository.OrderRepository;
 import com.ecommerce.order_service.repository.OrderItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -18,11 +24,16 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
+    private final RestTemplate restTemplate;
+
+    @Value("${product.service.url}")
+    private String productServiceUrl;
 
     @Autowired
-    public OrderService(OrderRepository orderRepository, OrderItemRepository orderItemRepository) {
+    public OrderService(OrderRepository orderRepository, OrderItemRepository orderItemRepository, RestTemplate restTemplate) {
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
+        this.restTemplate = restTemplate;
     }
 
     public List<Order> getAllOrders() {
@@ -34,15 +45,37 @@ public class OrderService {
     }
 
     @Transactional
-    public Order createOrder(Order order) {
+    public Order createOrder(OrderCreateRequest orderRequest) {
+        Order order = new Order();
         order.setOrderDate(new Date());
         order.setStatus(OrderStatus.CREATED);
+        order.setUserId(orderRequest.getUserId());
 
         // Calculate total price based on order items
-        double totalPrice = order.getOrderItems().stream()
-                .mapToDouble(item -> item.getQuantity() * 0.0) // Replace 0.0 with actual price logic
-                .sum();
+        List<OrderItem> orderItems = new ArrayList<>();
+        double totalPrice = 0.0;
 
+        for (OrderItemRequest itemRequest : orderRequest.getItems()) {
+            // Get product details from product service
+            ProductDto product = restTemplate.getForObject(
+                    productServiceUrl + "/api/products/" + itemRequest.getProductId(),
+                    ProductDto.class);
+            if (product == null) {
+                throw new RuntimeException("product not found");
+            }
+            OrderItem orderItem = new OrderItem();
+            orderItem.setProductId(product.getId());
+            orderItem.setProductName(product.getName());
+            orderItem.setQuantity(itemRequest.getQuantity());
+            orderItem.setOrder(order);
+
+            orderItems.add(orderItem);
+            orderItemRepository.save(orderItem);
+
+            totalPrice += product.getPrice() * itemRequest.getQuantity();
+
+        }
+        order.setOrderItems(orderItems);
         order.setTotalPrice(totalPrice);
 
         Order savedOrder = orderRepository.save(order);
@@ -51,12 +84,12 @@ public class OrderService {
                          savedOrder.getOrderItems().size(), savedOrder.getTotalPrice());
 
         // Set the order reference in each order item and save them
-        if (order.getOrderItems() != null) {
-            order.getOrderItems().forEach(item -> {
-                item.setOrder(savedOrder);
-                orderItemRepository.save(item);
-            });
-        }
+//        if (order.getOrderItems() != null) {
+//            order.getOrderItems().forEach(item -> {
+//                item.setOrder(savedOrder);
+//                orderItemRepository.save(item);
+//            });
+//        }
 
         return savedOrder;
     }

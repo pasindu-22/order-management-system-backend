@@ -34,7 +34,7 @@ public class Order {
 
     @Getter
     @Setter
-    private long userId;
+    private String userId;
 
     @Getter
     @Setter
