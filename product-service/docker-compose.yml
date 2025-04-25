@@ -5,10 +5,10 @@ services:
     image: mysql:8.0
     container_name: product-db
     environment:
-      MYSQL_DATABASE: product_service_db
-      MYSQL_USER: devuser
-      MYSQL_PASSWORD: Pasindu119
-      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE=product_service_db
+      MYSQL_USER=devuser
+      MYSQL_PASSWORD=Pasindu119
+      MYSQL_ROOT_PASSWORD=rootpassword
     ports:
       - "3307:3306"
     volumes:
@@ -25,9 +25,9 @@ services:
     ports:
       - "8083:8083"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://product-db:3306/product_service_db
-      SPRING_DATASOURCE_USERNAME: devuser
-      SPRING_DATASOURCE_PASSWORD: Pasindu119
+      SPRING_DATASOURCE_URL: jdbc:mysql://product-db:3306/${MYSQL_DATABASE}
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
     depends_on:
       product-db:
         condition: service_healthy
