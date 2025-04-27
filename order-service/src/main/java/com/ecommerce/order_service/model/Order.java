@@ -13,6 +13,7 @@ import java.util.List;
 @Table(name = "orders")
 public class Order {
     @Getter
+    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -34,7 +35,7 @@ public class Order {
 
     @Getter
     @Setter
-    private String userId;
+    private long userId;
 
     @Getter
     @Setter
