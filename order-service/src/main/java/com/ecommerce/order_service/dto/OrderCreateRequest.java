@@ -8,7 +8,8 @@ import java.util.List;
 public class OrderCreateRequest {
 
     @Getter
-    private String userId;
+    @Setter
+    private long userId;
 
     @Getter
     @Setter

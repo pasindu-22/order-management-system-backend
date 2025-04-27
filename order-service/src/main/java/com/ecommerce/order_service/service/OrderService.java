@@ -82,15 +82,6 @@ public class OrderService {
         System.out.printf("Saved order details - ID: %d, Date: %s, Status: %s, Items: %d, Total Price: %.2f%n",
                          savedOrder.getId(), savedOrder.getOrderDate(), savedOrder.getStatus(),
                          savedOrder.getOrderItems().size(), savedOrder.getTotalPrice());
-
-        // Set the order reference in each order item and save them
-//        if (order.getOrderItems() != null) {
-//            order.getOrderItems().forEach(item -> {
-//                item.setOrder(savedOrder);
-//                orderItemRepository.save(item);
-//            });
-//        }
-
         return savedOrder;
     }
 
