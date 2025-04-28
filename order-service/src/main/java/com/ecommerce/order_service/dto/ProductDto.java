@@ -16,4 +16,8 @@ public class ProductDto {
     @Getter
     @Setter
     private Double price;
+
+    @Getter
+    @Setter
+    private String productSku;
 }

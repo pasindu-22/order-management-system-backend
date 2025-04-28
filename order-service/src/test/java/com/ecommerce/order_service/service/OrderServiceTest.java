@@ -33,6 +33,9 @@ class OrderServiceTest {
     @Mock
     private RestTemplate restTemplate;
 
+    @Mock
+    private KafkaProducerService kafkaProducerService;
+
     @InjectMocks
     private OrderService orderService;
 
