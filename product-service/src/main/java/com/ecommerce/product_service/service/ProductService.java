@@ -23,7 +23,7 @@ public class ProductService {
         if (product == null) {
             throw new RuntimeException("Product not found");
         }
-        System.out.println("Product Sku: " + product.getProductSku());
+
         return product;
     }
 

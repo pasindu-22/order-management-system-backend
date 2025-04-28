@@ -65,7 +65,7 @@ public class OrderService {
             if (product == null) {
                 throw new RuntimeException("product not found");
             }
-            System.out.println("Product sku: " + product.getProductSku() + ", Quantity: " + itemRequest.getQuantity());
+
             OrderItem orderItem = new OrderItem();
             orderItem.setProductId(product.getId());
             orderItem.setProductName(product.getName());
@@ -82,8 +82,6 @@ public class OrderService {
         order.setOrderItems(orderItems);
         order.setTotalPrice(totalPrice);
 
-
-
         Order savedOrder = orderRepository.save(order);
 
         for (OrderItem orderItem : orderItems) {
@@ -93,9 +91,6 @@ public class OrderService {
             kafkaProducerService.sendMessage("order.placed", message);
         }
 
-        System.out.printf("Saved order details - ID: %d, Date: %s, Status: %s, Items: %d, Total Price: %.2f%n",
-                         savedOrder.getId(), savedOrder.getOrderDate(), savedOrder.getStatus(),
-                         savedOrder.getOrderItems().size(), savedOrder.getTotalPrice());
         return savedOrder;
     }
 

@@ -10,6 +10,7 @@
 - Spring Boot REST API (port 8082).
 - MySQL database for order persistence.
 - Transactional support for consistent order and order item management.
+- Asynchronous messaging with Kafka for inventory reservations.
 
 ## Public API Endpoints
 | HTTP Method | Endpoint | Description |
@@ -33,11 +34,12 @@ The `OrderItem` entity contains:
 - `order`: Reference to the parent order.
 - `productId`: ID of the product in the order.
 - `productName`: Name of the product.
+- `productSku`: SKU of the product.
 - `quantity`: Quantity of the product in the order.
 
 ## Service Integration
-- Can integrate with Product Service to fetch product details.
-- Can integrate with Inventory Service to check stock availability.
+- Integrates with Product Service to fetch product details.
+- Integrates with Inventory Service to check stock availability.
 
 ## Future Enhancements
 - Add support for order history and tracking.
@@ -51,3 +53,4 @@ The `OrderItem` entity contains:
 - Run the following command:
 ```bash
 mvn spring-boot:run
+```
