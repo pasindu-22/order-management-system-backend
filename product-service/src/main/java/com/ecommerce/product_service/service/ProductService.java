@@ -19,8 +19,12 @@ public class ProductService {
     }
 
     public Product getProductById(Long id) {
-        return productRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+        Product product = productRepo.findById(id).get();
+        if (product == null) {
+            throw new RuntimeException("Product not found");
+        }
+        System.out.println("Product Sku: " + product.getProductSku());
+        return product;
     }
 
     public Product createProduct(Product product) {
@@ -30,7 +34,7 @@ public class ProductService {
     public Product updateProduct(Long id, Product productDetails) {
         Product product = getProductById(id);
         product.setName(productDetails.getName());
-        product.setSku(productDetails.getSku());
+        product.setProductSku(productDetails.getProductSku());
         product.setDescription(productDetails.getDescription());
         product.setPrice(productDetails.getPrice());
         product.setCategory(productDetails.getCategory());

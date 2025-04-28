@@ -13,7 +13,7 @@ public class Product {
     private Long id;
 
     private String name;
-    private String sku;
+    private String productSku;
     private String description;
     private double price;
 
@@ -57,12 +57,12 @@ public class Product {
         this.name = name;
     }
 
-    public String getSku() {
-        return sku;
+    public String getProductSku() {
+        return productSku;
     }
 
-    public void setSku(String sku) {
-        this.sku = sku;
+    public void setProductSku(String sku) {
+        this.productSku = sku;
     }
 
     public String getDescription() {

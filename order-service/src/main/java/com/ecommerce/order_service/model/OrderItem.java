@@ -36,6 +36,10 @@ public class OrderItem {
     @Setter
     private int quantity;
 
+    @Getter
+    @Setter
+    private String productSku;
+
 
 }
 
