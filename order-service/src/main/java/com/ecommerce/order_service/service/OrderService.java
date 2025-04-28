@@ -25,15 +25,17 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
     private final RestTemplate restTemplate;
+    private final KafkaProducerService kafkaProducerService;
 
     @Value("${product.service.url}")
     private String productServiceUrl;
 
     @Autowired
-    public OrderService(OrderRepository orderRepository, OrderItemRepository orderItemRepository, RestTemplate restTemplate) {
+    public OrderService(OrderRepository orderRepository, OrderItemRepository orderItemRepository, RestTemplate restTemplate, KafkaProducerService kafkaProducerService) {
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
         this.restTemplate = restTemplate;
+        this.kafkaProducerService = kafkaProducerService;
     }
 
     public List<Order> getAllOrders() {
@@ -63,9 +65,11 @@ public class OrderService {
             if (product == null) {
                 throw new RuntimeException("product not found");
             }
+            System.out.println("Product sku: " + product.getProductSku() + ", Quantity: " + itemRequest.getQuantity());
             OrderItem orderItem = new OrderItem();
             orderItem.setProductId(product.getId());
             orderItem.setProductName(product.getName());
+            orderItem.setProductSku(product.getProductSku());
             orderItem.setQuantity(itemRequest.getQuantity());
             orderItem.setOrder(order);
 
@@ -78,7 +82,17 @@ public class OrderService {
         order.setOrderItems(orderItems);
         order.setTotalPrice(totalPrice);
 
+
+
         Order savedOrder = orderRepository.save(order);
+
+        for (OrderItem orderItem : orderItems) {
+            // Publish order placed events for each order item
+            String message = String.format("{\"orderId\": \"%d\", \"productSku\": \"%s\", \"quantity\": %d}",
+                    savedOrder.getId(), orderItem.getProductSku(), orderItem.getQuantity());
+            kafkaProducerService.sendMessage("order.placed", message);
+        }
+
         System.out.printf("Saved order details - ID: %d, Date: %s, Status: %s, Items: %d, Total Price: %.2f%n",
                          savedOrder.getId(), savedOrder.getOrderDate(), savedOrder.getStatus(),
                          savedOrder.getOrderItems().size(), savedOrder.getTotalPrice());
