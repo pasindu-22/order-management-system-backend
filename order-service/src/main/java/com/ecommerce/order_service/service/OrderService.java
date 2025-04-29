@@ -105,6 +105,22 @@ public class OrderService {
         return null;
     }
 
+    @Transactional
+    public Order orderPaid(Long id) {
+        Optional<Order> order = orderRepository.findById(id);
+        if (order.isPresent()) {
+            Order existingOrder = order.get();
+            existingOrder.setStatus(OrderStatus.PAID);
+
+            String message = String.format("{\"orderId\": \"%d\"}", id);
+                kafkaProducerService.sendMessage("order.completed", message);
+
+            return orderRepository.save(existingOrder);
+        } else {
+            return null;
+        }
+    }
+
     public void deleteOrder(Long id) {
         orderRepository.deleteById(id);
     }

@@ -17,4 +17,3 @@ docker-compose up
 # About docker-compose.yml
 * The docker-compose file is used to run the application with all the dependencies.
 * A service is an abstract definition of a computing resource within an application which can be scaled or replaced independently from other components.
-* 
