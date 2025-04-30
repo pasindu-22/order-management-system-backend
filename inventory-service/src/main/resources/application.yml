@@ -20,11 +20,16 @@ spring:
     show-sql: true
     database-platform: org.hibernate.dialect.MySQL8Dialect
 
-  spring:
-    kafka:
-      bootstrap-servers: localhost:9092   // https://docs.docker.com/guides/kafka/  Used to run Kafka in Docker
-      consumer:
-        group-id: inventory-group
-        auto-offset-reset: earliest
-      producer:
-        acks: all
+  kafka:
+    bootstrap-servers: localhost:9092   # https://docs.docker.com/guides/kafka/  Used to run Kafka in Docker
+    consumer:
+      group-id: inventory-group
+      auto-offset-reset: earliest
+    producer:
+      acks: all
+
+redisson:
+  config: |
+    singleServerConfig:
+      address: "redis://localhost:6379"
+

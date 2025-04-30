@@ -39,6 +39,7 @@ A microservice for inventory management developed by Pasindu.
 - `order.canceled` → Trigger releaseReservedInventory event
 - `stock.low` → Trigger lowStockAlerts for admin notifications
 - `stock.updated` → Trigger real-time stock updates in Product Service
+- `order.completed` → Trigger stock reservation complete.
 
 ### Example Event Flow
 **Order Flow (Asynchronous)**
@@ -142,6 +143,58 @@ When deploying to the cloud, use a managed Kafka service like:
 - Implements KafkaListener services that listen to various kafka topics and perform operations accordingly
 - Both Kafka and REST APIs can be used for stock reservation/release operations
 
-## To Do
-1. [ ] Pending - Update the stock reservation logic to create records in the reservation table and implement release logic
-2. [ ] Update reservationRequestDTO to include other details about reservations and necessary event for expiry and so on
+## Redis Implementation
+
+The inventory service uses Redis for temporary reservation storage with TTL (Time-To-Live) functionality.
+
+### Reservation Flow
+1. When a product is reserved, the reservation is stored in Redis with a 10-minute TTL
+2. If payment is completed within the TTL, the reservation is committed to the database
+3. If payment fails or TTL expires, the reservation is automatically discarded
+
+### Redis Structure
+- Key pattern: `reservation:{orderId}`
+- Type: Hash map
+- Fields: `{productSku}` → `{quantity}`
+- TTL: 10 minutes
+
+### Redis Setup
+
+#### Docker Setup
+```bash
+# Start Redis container
+docker run --name redis -p 6379:6379 -d redis
+
+# Stop Redis
+docker stop redis
+
+# Start existing Redis container
+docker start redis
+```
+### Monitoring Reservations
+### Connect to Redis CLI
+```
+docker exec -it redis redis-cli
+```
+
+### View active reservations
+```
+KEYS reservation:*
+```
+
+### View details of a specific reservation
+```
+HGETALL reservation:{orderId}
+```
+
+### Check remaining TTL in seconds
+```
+TTL reservation:{orderId}
+```
+
+### Benefits of Redis implementation
+- No database writes until payment is confirmed
+- Automatic expiration through Redis TTL
+- Multiple products can be reserved with one order ID
+- Better concurrency handling for high-traffic scenarios
+- Reduced database load
