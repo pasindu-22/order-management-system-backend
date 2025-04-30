@@ -57,5 +57,9 @@ Benefits of Bidirectional Relationships:
 
 Navigate from parent to children: order.getOrderItems()
 Navigate from child to parent: orderItem.getOrder()
-Maintain database normalization while providing convenient object navigation organize this markdown
-```
+Maintain database normalization while providing convenient object navigation.
+
+## API Documentation
+- Use Swagger for API documentation.
+** Annotations:
+   --

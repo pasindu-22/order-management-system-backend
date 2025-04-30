@@ -62,7 +62,7 @@ public class KafkaConsumerService {
         }
     }
 
-    @KafkaListener(topics = "order.paid", groupId = "inventory-group")
+    @KafkaListener(topics = "order.completed", groupId = "inventory-group")
     public void handleOrderPaid(String message) {
         try {
             JsonNode root = objectMapper.readTree(message);
@@ -70,7 +70,7 @@ public class KafkaConsumerService {
 
             reservationService.completeReservation(orderId);
         } catch (Exception e) {
-            System.out.println("Error processing order.paid event: " + e.getMessage());
+            System.out.println("Error processing order.completed event: " + e.getMessage());
         }
     }
 }

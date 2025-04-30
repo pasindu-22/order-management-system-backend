@@ -57,4 +57,14 @@ public class OrderController {
         orderService.deleteOrder(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/{id}/paid")
+    public String markOrderAsPaid(@PathVariable Long id) {
+        Order order = orderService.orderPaid(id);
+        if (order != null) {
+            return "Order marked as paid successfully";
+        } else {
+            return "Order not found";
+        }
+    }
 }

@@ -48,3 +48,6 @@ The Product entity contains:
 ```bash
 mvn spring-boot:run
 ```
+## API Documentation
+- Swagger UI available at: `http://localhost:8083/swagger-ui/index.html`
+- `https://springdoc.org/` Visit for more information about Spring Documentation
