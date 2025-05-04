@@ -1,6 +1,6 @@
-# E-Commerce Platform Backend
+# Order Management System Backend
 
-This monorepo contains multiple Spring Boot microservices for an e-commerce system.
+This monorepo contains multiple Spring Boot microservices for an order management system.
 
 ## Microservices:
 - `product-service`: Manages products.
@@ -23,5 +23,8 @@ Available services:
 5. Product Service : port 8083
 6. User Service : port 8084
 
-## We use eureka server to find the services and API Gateway to route the request to the respective services dynamically without hardcoding URLs.
-## We use API Gateway to provide a single entry point for clients and secure, route, and balance requests
+- Uses eureka server to find the services and API Gateway to route the request to the respective services dynamically without hardcoding URLs.
+- Uses API Gateway to provide a single entry point for clients and secure, route, and balance requests
+- Uses Spring Security to secure the services and JWT for authentication and authorization.
+
+
