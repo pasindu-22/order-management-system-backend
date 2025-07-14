@@ -3,7 +3,8 @@ server:
 spring:
   data:
     mongodb:
-      uri: mongodb+srv://devuser:Pasindu119@userservice.4jjnyoe.mongodb.net/userdb?retryWrites=true&w=majority
+      uri: mongodb://host.docker.internal:27017
+      database: userservice_db
   security:
     oauth2:
       client:
@@ -12,6 +13,14 @@ spring:
             client-id: 540001645968-9o4fq87kgh1dpchqoo823aqa7h4rl8vm.apps.googleusercontent.com
             client-secret: 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
             scope: profile, email
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationSorter: method
+    tagsSorter: alpha
+    filter: true
 services:
   inventory:
     url: http://localhost:8081

@@ -9,6 +9,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -46,12 +47,14 @@ public class SecurityConfig {
         JwtAuthenticationFilter jwtFilter = new JwtAuthenticationFilter(jwtUtil, userDetailsService);
 
         http
-                .csrf(csrf -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("swagger-ui/**").permitAll()
+                        .requestMatchers("/api-docs/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/api/employees/**").hasRole("ADMIN")
-                        .requestMatchers("api/customers/**").hasAnyRole("ADMIN", "CUSTOMER")
+                        .requestMatchers("/api/customers/**").hasAnyRole("ADMIN", "CUSTOMER")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
